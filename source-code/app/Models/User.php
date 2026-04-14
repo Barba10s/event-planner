@@ -7,6 +7,8 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -29,4 +31,17 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function ownedChannels(): HasMany
+    {
+        return $this->hasMany(Channel::class, 'owner_id');
+    }
+
+    public function channels(): BelongsToMany
+    {
+        return $this->belongsToMany(Channel::class, 'channel_user')
+            ->withPivot('role', 'invited_at', 'joined_at')
+            ->withTimestamps();
+    }
+
 }
