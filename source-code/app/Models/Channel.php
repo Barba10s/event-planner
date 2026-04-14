@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-#[Fillable(['name', 'description', 'owner_id', 'invitation_token'])]
+#[Fillable(['name', 'description', 'owner_id', 'invite_token'])]
 class Channel extends Model
 {
     use HasFactory;
