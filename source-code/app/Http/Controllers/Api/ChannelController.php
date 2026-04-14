@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateChannelRequest;
 use App\Http\Resources\ChannelResource;
 use Illuminate\Http\JsonResponse;
