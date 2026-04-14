@@ -15,7 +15,7 @@ class ChannelController extends Controller
         $channel = $request->user()->ownedChannels()->create([
             "name" => $request->name,
             "description" => $request->description,
-            "invitation_token" => Str::random(32),
+            "invite_token" => Str::random(32),
         ]);
 
         return response()->json([
