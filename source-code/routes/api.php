@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\ChannelController;
+use App\Http\Controllers\Api\ChannelController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
