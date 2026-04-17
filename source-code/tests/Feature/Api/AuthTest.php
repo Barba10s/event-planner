@@ -65,7 +65,7 @@ test('authenticated user can logout', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
 
-    $response = $this->postJson('/api/v1/authorization/logout');
+    $response = $this->postJson('/api/v1/logout');
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true);
