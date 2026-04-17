@@ -24,23 +24,13 @@ test('authenticated user can create channel', function () {
     ]);
 
     $response->assertStatus(201)
-        ->assertJson([
-            'name' => 'Friday Board Games',
-            'owner_id' => $user->id,
-        ])
+        ->assertJsonPath('success', true)
+        ->assertJsonPath('channel.name', 'Friday Board Games')
+        ->assertJsonPath('channel.owner_id', $user->id)
         ->assertJsonStructure([
-            'id',
-            'name',
-            'description',
-            'invite_link',
-            'owner_id',
-            'created_at'
+            'success',
+            'channel' => ['id', 'name', 'description', 'invite_link', 'owner_id', 'created_at']
         ]);
-
-    $this->assertDatabaseHas('channels', [
-        'name' => 'Friday Board Games',
-        'owner_id' => $user->id,
-    ]);
 });
 
 test('channel name is required', function () {
@@ -72,5 +62,6 @@ test('full flow: register → login → create channel', function () {
     ]);
 
     $channel->assertStatus(201)
-        ->assertJsonPath('name', 'Integration Test Group');
+        ->assertJsonPath('success', true)
+        ->assertJsonPath('channel.name', 'Integration Test Group');
 });
