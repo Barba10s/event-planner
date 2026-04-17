@@ -2,6 +2,7 @@
 
 namespace App\Models\Channel;
 
+use App\Models\ChannelUser;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -22,6 +23,7 @@ class Channel extends Model
     public function members(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'channel_user')
+            ->using(ChannelUser::class)
             ->withPivot('role', 'invited_at', 'joined_at')
             ->withTimestamps();
     }
