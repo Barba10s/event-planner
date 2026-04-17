@@ -13,6 +13,9 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
 
-        Route::post('/channels', [ChannelController::class, 'create']);
+        Route::prefix('/channels')->group(function () {
+            Route::resource('/', ChannelController::class)->only(['index', 'show', 'store']);
+            Route::post('/join/{token}', [ChannelController::class, 'joinByToken']);
+        });
     });
 });
