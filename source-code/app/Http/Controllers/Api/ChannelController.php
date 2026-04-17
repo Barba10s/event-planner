@@ -7,13 +7,17 @@ use App\Http\Requests\CreateChannelRequest;
 use App\Http\Resources\ChannelResource;
 use App\Models\Channel\Casts\ChannelRole;
 use App\Models\Channel\Channel;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class ChannelController extends Controller
 {
-    public function create(CreateChannelRequest $request): JsonResponse
+
+    use AuthorizesRequests;
+
+    public function store(CreateChannelRequest $request): JsonResponse
     {
         $channel = $request->user()->ownedChannels()->create([
             "name" => $request->name,
