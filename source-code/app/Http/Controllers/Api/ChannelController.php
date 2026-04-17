@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateChannelRequest;
 use App\Http\Resources\ChannelResource;
+use App\Jobs\SendChannelJoinNotification;
 use App\Models\Channel\Casts\ChannelRole;
 use App\Models\Channel\Channel;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -78,6 +79,10 @@ class ChannelController extends Controller
                 'joined_at' => now(),
             ]
         ]);
+
+        SendChannelJoinNotification::dispatch($channel->id, $request->user()->id)
+            ->onQueue('notifications')
+            ->afterCommit();
 
         return response()->json([
             'success' => true,
