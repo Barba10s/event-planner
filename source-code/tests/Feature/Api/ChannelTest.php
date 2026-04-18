@@ -121,3 +121,29 @@ test('pivot role is correctly cast to ChannelRole enum instance', function () {
     expect($pivotRole)->toBeInstanceOf(ChannelRole::class)
         ->and($pivotRole)->toBe(ChannelRole::MEMBER);
 });
+
+test('joining channel dispatches and processes notification job (integration)', function () {
+    $owner = User::factory()->create();
+    $guest = User::factory()->create();
+    Sanctum::actingAs($guest);
+
+    $channel = $owner->ownedChannels()->create([
+        'name' => 'Integration Test',
+        'invite_token' => Str::random(32),
+    ]);
+
+    Log::spy();
+
+    $this->postJson("/api/v1/channels/join/{$channel->invite_token}")
+        ->assertStatus(200);
+
+    usleep(500_000);
+
+    Log::shouldHaveReceived('info')
+        ->withArgs(fn($message) => str_contains($message, 'joined channel'));
+
+    $this->assertDatabaseHas('channel_user', [
+        'channel_id' => $channel->id,
+        'user_id' => $guest->id,
+    ]);
+});
