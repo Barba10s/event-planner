@@ -35,7 +35,7 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 "success" => false,
-                "message" => "The provided password is not matched."
+                "message" => "Invalid credentials"
             ], 401);
         }
 
@@ -44,7 +44,7 @@ class AuthController extends Controller
         return response()->json([
             "success" => true,
             "token" => $token
-        ], 201);
+        ], 200);
     }
 
     public function logout(Request $request)

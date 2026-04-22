@@ -33,7 +33,7 @@ class ChannelController extends Controller
 
         return response()->json([
             "success" => true,
-            "channel" => channelResource::make($channel)
+            "channel" => ChannelResource::make($channel)
         ], 201);
     }
 
