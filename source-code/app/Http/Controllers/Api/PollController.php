@@ -82,6 +82,7 @@ class PollController extends Controller
                     'poll_id' => $poll->id,
                     'user_id' => $request->user()->id,
                     'option_id' => $optionId,
+                    'voted_at' => now(),
                 ]);
             }
         });
