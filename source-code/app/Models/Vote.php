@@ -14,6 +14,7 @@ class Vote extends Model
         'poll_id',
         'user_id',
         'option_id',
+        'voted_at',
     ];
 
     protected $casts = [
