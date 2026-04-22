@@ -77,8 +77,14 @@ class PollController extends Controller
         $optionIds = $request->validated('option_id');
 
         DB::transaction(function () use ($poll, $request, $optionIds) {
+            if (!$poll->allow_multiple_votes) {
+                Vote::where('poll_id', $poll->id)
+                    ->where('user_id', $request->user()->id)
+                    ->delete();
+            }
+
             foreach ($optionIds as $optionId) {
-                Vote::firstOrCreate([
+                Vote::create([
                     'poll_id' => $poll->id,
                     'user_id' => $request->user()->id,
                     'option_id' => $optionId,
