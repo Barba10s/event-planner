@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Mail\ChannelJoinMail;
 use App\Models\Channel\Channel;
 use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -10,6 +11,7 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Throwable;
 
 class SendChannelJoinNotification implements ShouldQueue
@@ -39,7 +41,9 @@ class SendChannelJoinNotification implements ShouldQueue
             return;
         }
 
-        Log::info(" User {$user->name} joined channel: {$channel->name}");
+        Mail::to($user->email)->send(new ChannelJoinMail($channel, $user));
+
+        Log::info("Email sent to {$user->email}: joined channel {$channel->name}");
     }
 
     public function failed(Throwable $exception): void
