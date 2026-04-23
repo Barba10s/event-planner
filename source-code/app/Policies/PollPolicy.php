@@ -46,23 +46,17 @@ class PollPolicy
             return false;
         }
 
-        if ($poll->relationLoaded('channel') && $poll->channel->relationLoaded('members')) {
-            $isMember = $poll->channel->members->contains('id', $user->id);
-            if (!$isMember) {
-                return false;
-            }
-        } else {
-            $isMember = $poll->channel->members()->where('user_id', $user->id)->exists();
-            if (!$isMember) {
-                return false;
-            }
+        if (!$poll->relationLoaded('channel')) {
+            $poll->load('channel');
         }
 
-        if (!$poll->allow_multiple_votes) {
-            if ($poll->relationLoaded('votes')) {
-                return !$poll->votes->contains('user_id', $user->id);
-            }
-            return !$poll->votes()->where('user_id', $user->id)->exists();
+        $isMember = $poll->channel->members->contains('id', $user->id);
+        if (!$isMember) {
+            return false;
+        }
+
+        if ($poll->allow_multiple_votes) {
+            return true;
         }
 
         return true;
