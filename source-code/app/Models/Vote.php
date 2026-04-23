@@ -10,6 +10,8 @@ class Vote extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'poll_id',
         'user_id',
