@@ -23,7 +23,7 @@ class PollOption extends Model
 
     public function votes(): HasMany
     {
-        return $this->hasMany(Vote::class);
+        return $this->hasMany(Vote::class, 'option_id');
     }
 
     public function getVotesCountAttribute(): int
