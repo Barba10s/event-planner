@@ -6,21 +6,26 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Poll\StorePollRequest;
 use App\Http\Requests\Poll\VoteOnPollRequest;
 use App\Http\Resources\Poll\PollResource;
-use App\Jobs\SendPollCreatedNotifications;
+use App\Jobs\SendPollCreatedNotification;
 use App\Models\Channel\Channel;
 use App\Models\Poll;
 use App\Models\Vote;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PollController extends Controller
 {
+    use AuthorizesRequests;
+
     public function store(StorePollRequest $request, int $channelId): JsonResponse
     {
         $channel = $this->getChannelForUser($request, $channelId);
 
-        $this->authorize('create', new Poll(['channel' => $channel]));
+        $poll = new Poll(['channel_id' => $channel->id]);
+        $poll->setRelation('channel', $channel);
+        $this->authorize('create', $poll);
 
         $poll = DB::transaction(function () use ($request, $channel) {
             $poll = $channel->polls()->create([
@@ -38,7 +43,7 @@ class PollController extends Controller
             return $poll->load('options');
         });
 
-        SendPollCreatedNotifications::dispatch($poll->id)->afterCommit();
+        SendPollCreatedNotification::dispatch($poll->id)->afterCommit();
 
         return response()->json([
             'success' => true,
