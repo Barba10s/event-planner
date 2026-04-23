@@ -14,18 +14,20 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
 
-        Route::prefix('/channels')->group(function () {
-            Route::resource('/', ChannelController::class)->only(['index', 'show', 'store']);
+        Route::prefix('channels')->group(function () {
+            Route::apiResource('/', ChannelController::class)->only(['index', 'show', 'store']);
             Route::post('/join/{token}', [ChannelController::class, 'joinByToken'])
                 ->middleware('throttle:10,1');
         });
 
-        Route::prefix('/channels/{channelId}/polls')->group(function () {
-            Route::resource('/', PollController::class)->only(['index', 'show', 'store']);
+        Route::prefix('channels/{channelId}/polls')->group(function () {
+            Route::apiResource('/', PollController::class)->only(['index', 'show', 'store']);
 
-            Route::post('/{poll}/vote', [PollController::class, 'vote'])
-                ->middleware('throttle:3,1');
-            Route::get('/{poll}/results', [PollController::class, 'results']);
+            Route::prefix('{poll}')->group(function () {
+                Route::post('/vote', [PollController::class, 'vote'])
+                    ->middleware('throttle:3,1');
+                Route::get('/results', [PollController::class, 'results']);
+            });
         });
     });
 });
