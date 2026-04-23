@@ -83,9 +83,17 @@ class PollController extends Controller
 
         DB::transaction(function () use ($poll, $request, $optionIds) {
             if (!$poll->allow_multiple_votes) {
-                Vote::where('poll_id', $poll->id)
+                $oldVote = Vote::where('poll_id', $poll->id)
                     ->where('user_id', $request->user()->id)
-                    ->delete();
+                    ->first();
+
+                if ($oldVote) {
+                    DB::table('poll_options')
+                        ->where('id', $oldVote->option_id)
+                        ->decrement('vote_count');
+
+                    $oldVote->delete();
+                }
             }
 
             foreach ($optionIds as $optionId) {
@@ -95,6 +103,10 @@ class PollController extends Controller
                     'option_id' => $optionId,
                     'voted_at' => now(),
                 ]);
+
+                DB::table('poll_options')
+                    ->where('id', $optionId)
+                    ->increment('vote_count');
             }
         });
 
