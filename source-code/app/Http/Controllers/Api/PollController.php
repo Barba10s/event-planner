@@ -67,14 +67,14 @@ class PollController extends Controller
         ]);
     }
 
-    public function vote(VoteOnPollRequest $request, int $channelId, int $pollId): JsonResponse
+    public function vote(VoteOnPollRequest $request, int $channelId, Poll $poll): JsonResponse
     {
-        $channel = $this->getChannelForUser($request, $channelId);
-        $poll = $channel->polls()->with('options')->findOrFail($pollId);
-
+        $this->validatePollBelongsToChannel($poll, $channelId);
         $this->authorize('vote', $poll);
 
-        $optionIds = $request->validated('option_id');
+        $poll->load('options');
+
+        $optionIds = $request->option_id;
 
         DB::transaction(function () use ($poll, $request, $optionIds) {
             if (!$poll->allow_multiple_votes) {
@@ -100,10 +100,10 @@ class PollController extends Controller
         ]);
     }
 
-    public function results(Request $request, int $channelId, int $pollId): JsonResponse
+    public function results(Request $request, int $channelId, Poll $poll): JsonResponse
     {
-        $channel = $this->getChannelForUser($request, $channelId);
-        $poll = $channel->polls()->with(['options.votes'])->findOrFail($pollId);
+        $this->validatePollBelongsToChannel($poll, $channelId);
+        $poll->load(['options.votes']);
 
         $this->authorize('viewResults', $poll);
 
@@ -131,5 +131,12 @@ class PollController extends Controller
     private function getChannelForUser(Request $request, int $channelId): Channel
     {
         return $request->user()->channels()->findOrFail($channelId);
+    }
+
+    private function validatePollBelongsToChannel(Poll $poll, int $channelId): void
+    {
+        if ($poll->channel_id !== $channelId) {
+            abort(403, 'Poll does not belong to this channel');
+        }
     }
 }
