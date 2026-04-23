@@ -23,7 +23,11 @@ class PollPolicy
 
     public function create(User $user, Poll $poll): bool
     {
-        return $poll->channel->owner_id === $user->id;
+        if (!$poll->relationLoaded('channel')) {
+            $poll->load('channel');
+        }
+
+        return $poll->channel?->owner_id === $user->id;
     }
 
     public function update(User $user, Poll $poll): bool
