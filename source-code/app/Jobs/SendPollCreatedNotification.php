@@ -9,8 +9,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Log;
 use Throwable;
 
 class SendPollCreatedNotification implements ShouldQueue
@@ -31,6 +31,7 @@ class SendPollCreatedNotification implements ShouldQueue
         $poll = Poll::with(['channel.members', 'creator'])->find($this->pollId);
 
         if (!$poll || !$poll->isActive()) {
+            Log::warning('Poll not found or not active', ['poll_id' => $this->pollId]);
             return;
         }
 
@@ -41,6 +42,8 @@ class SendPollCreatedNotification implements ShouldQueue
 
             Mail::to($member->email)->send(new PollCreatedMail($poll, $member));
         }
+
+        Log::info("Poll notifications sent: {$poll->question}", ['poll_id' => $poll->id]);
     }
 
     public function failed(Throwable $exception): void
