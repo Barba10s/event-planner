@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Mail;
 use Log;
 use Throwable;
 
-class SendPollCreatedNotifications implements ShouldQueue
+class SendPollCreatedNotification implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
