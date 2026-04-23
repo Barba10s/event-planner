@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChannelController;
+use App\Http\Controllers\Api\PollController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -17,6 +18,14 @@ Route::prefix('v1')->group(function () {
             Route::resource('/', ChannelController::class)->only(['index', 'show', 'store']);
             Route::post('/join/{token}', [ChannelController::class, 'joinByToken'])
                 ->middleware('throttle:10,1');
+        });
+
+        Route::prefix('/channels/{channelId}/polls')->group(function () {
+            Route::resource('/', PollController::class)->only(['index', 'show', 'store']);
+
+            Route::post('/{poll}/vote', [PollController::class, 'vote'])
+                ->middleware('throttle:3,1');
+            Route::get('/{poll}/results', [PollController::class, 'results']);
         });
     });
 });
