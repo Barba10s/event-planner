@@ -10,12 +10,15 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "backpack/crud": "^7.0",
+        "backpack/theme-tabler": "^2.0",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0",
         "vladimir-yuldashev/laravel-queue-rabbitmq": "14.2"
     },
     "require-dev": {
+        "backpack/generators": "^4.1",
         "fakerphp/faker": "^1.23",
         "laravel/pail": "^1.2.5",
         "laravel/pint": "^1.27",
@@ -58,7 +61,8 @@
             "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "@php artisan basset:cache"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
@@ -70,6 +74,9 @@
         ],
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
+        ],
+        "post-install-cmd": [
+            "@php artisan basset:cache"
         ]
     },
     "extra": {
