@@ -5,6 +5,7 @@ namespace App\Models\Channel;
 use App\Models\ChannelUser;
 use App\Models\Poll;
 use App\Models\User;
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Channel extends Model
 {
-    use HasFactory;
+    use HasFactory, CrudTrait;
 
     protected $fillable = ['name', 'description', 'owner_id', 'invite_token'];
 
